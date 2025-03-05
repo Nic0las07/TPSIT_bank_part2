@@ -1,35 +1,51 @@
-package org.Nicolas.model;
+package org.Nicolas.model.bank;
 
+import org.Nicolas.model.date.Date;
+
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
 public class Bank {
-    private double money;
-    private User user;
-    private Date time;
 
-    public Bank() {
-        this(0.0, new User(), new Date());
+    private String bankName;
+    private ArrayList<User> usersList;
+    private final Date time;
+
+    public Bank(String bankName) {
+        this.time = new Date();
+        this.bankName = bankName;
     }
 
-    public Bank(double money, User user, Date time) {
-        this.money = money;
-        this.user = user;
+    public Bank(String bankName, Date time) {
+        this.bankName = bankName;
         this.time = time;
     }
 
-    public Bank(double money){
-        this.money = money;
-        this.user = new User();
-        this.time = new Date();
+    public boolean registerUser(String username, String password){
+        for(User user : usersList){
+            if(user.username == username){return false;}
+        }
+        usersList.add(new User(username, password));
+        return true;
     }
 
-    public Bank(double money, User user){
-        this.money = money;
-        this.user = user;
-        this.time = new Date();
+    public int loginUser(String username, String password){
+        User user = new User(username, password);
+        if(!usersList.contains(user)){return -1;}
+        return usersList.indexOf(user);
     }
 
+    public void advanceTime(int day, int month, int year) {
+        Date previousTime = new Date(this.time);
+        this.time.advancement(day, month, year);
+        int bonus = this.time.getDifferenceMonths(previousTime) * 100;
+        for (User user : usersList) {
+            user.bankBalance += bonus;
+        }
+    }
+
+/*
     private int printGuiSelections(Scanner scanner) {
         System.out.println("Choose one of these options:");
         System.out.println("1 - deposit      2 - withdrawal");
@@ -102,96 +118,6 @@ public class Bank {
         scanner.close();
     }
 
-    public void deposit(double amount) {
-        if (this.user.getWalletMoney() - amount >= 0) {
-            this.money += amount;
-            this.user.addToWallet(-amount);
-        } else {
-            System.out.println("You don't have enough money to deposit");
-        }
-    }
+ */
 
-    public void withdraw(double amount) {
-        if (this.money - amount >= 0) {
-            this.money -= amount;
-            this.user.addToWallet(amount);
-        } else {
-            System.out.println("You don't have enough money to withdraw");
-        }
-    }
-
-    public void invest(double amount, String duration, String risk) {
-        if (this.money <= 0 || amount <= 0 || this.money - amount < 0) {
-            System.out.println("No investment available: Account balance is zero or negative");
-            return;
-        }
-
-        double profitMultiplier = 1;
-        double riskMultiplier = 0;
-
-        switch (duration) {
-            case "short":
-                this.advanceTime(0, 1, 0);
-                profitMultiplier = 1.05;
-                break;
-            case "medium":
-                this.advanceTime(0, 6, 0);
-                profitMultiplier = 1.25;
-                break;
-            case "long":
-                this.advanceTime(0, 0, 1);
-                profitMultiplier = 1.4;
-                break;
-        }
-
-        double finalInvestment = (amount * profitMultiplier) - amount;
-
-        switch (risk) {
-            case "low":
-                riskMultiplier = 1;
-                finalInvestment *= 1.5;
-                break;
-            case "medium":
-                riskMultiplier = 1.5;
-                finalInvestment *= 2.5;
-                break;
-            case "high":
-                riskMultiplier = 3;
-                finalInvestment *= 4;
-                break;
-        }
-
-        Random random = new Random();
-        double randomValue = random.nextInt(8000) * riskMultiplier;
-
-        System.out.println("Calculating final gain or loss...");
-
-        if (randomValue < 4500) {
-            System.out.println("Gain!");
-            System.out.println("You earned " + finalInvestment + " euros");
-        } else {
-            System.out.println("Loss!");
-            System.out.println("You lost " + finalInvestment + " euros");
-            finalInvestment = -finalInvestment;
-        }
-
-        this.money += finalInvestment;
-        System.out.println("Current account balance: " + this.getMoney() + " euros");
-    }
-
-    public void advanceTime(int day, int month, int year) {
-        Date previousTime = new Date(this.time);
-        this.time.advancement(day, month, year);
-        int bonus = this.time.getDifferenceMonths(previousTime) * 100;
-        this.user.addToWallet(bonus);
-        System.out.println("Bonus of " + bonus + " euros added to your wallet!");
-    }
-
-    public double getMoney() {
-        return this.money;
-    }
-
-    public double getWallet() {
-        return this.user.getWalletMoney();
-    }
 }
