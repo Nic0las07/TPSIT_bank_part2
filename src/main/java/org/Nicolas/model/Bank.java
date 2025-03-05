@@ -8,14 +8,26 @@ public class Bank {
     private User user;
     private Date time;
 
+    public Bank() {
+        this(0.0, new User(), new Date());
+    }
+
     public Bank(double money, User user, Date time) {
         this.money = money;
         this.user = user;
         this.time = time;
     }
 
-    public Bank() {
-        this(0.0, new User(), new Date());
+    public Bank(double money){
+        this.money = money;
+        this.user = new User();
+        this.time = new Date();
+    }
+
+    public Bank(double money, User user){
+        this.money = money;
+        this.user = user;
+        this.time = new Date();
     }
 
     private int printGuiSelections(Scanner scanner) {
@@ -63,7 +75,7 @@ public class Bank {
                     this.invest(amount, duration, risk);
                     break;
                 case 4:
-                    this.time.getTime();
+                    System.out.println(this.time.getTime());
                     System.out.println("You can choose");
                     System.out.println(" - days (required)");
                     System.out.println(" - months (not required, 0 to ignore)");
@@ -73,7 +85,7 @@ public class Bank {
                     int month = scanner.nextInt();
                     int year = scanner.nextInt();
                     this.advanceTime(day, month, year);
-                    this.time.getTime();
+                    System.out.println(this.time.getTime());
                     break;
                 case 5:
                     System.out.println("In your account, you have " + this.getMoney() + " euros");

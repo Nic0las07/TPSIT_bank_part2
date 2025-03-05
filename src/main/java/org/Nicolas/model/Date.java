@@ -1,5 +1,7 @@
 package org.Nicolas.model;
 
+import static java.lang.Math.abs;
+
 public class Date {
     private int day;
     private int month;
@@ -11,32 +13,82 @@ public class Date {
         this.year = 2025;
     }
 
+    public Date(int day){
+        this.day = day;
+        this.month = 1;
+        this.year = 2025;
+    }
+
+    public Date(int day, int month){
+        this.day = day;
+        this.month = month;
+        this.year = 2025;
+    }
+
+    public Date(int day, int month, int year){
+        this.day = day;
+        this.month = month;
+        this.year = year;
+    }
+
     public Date(Date date){
         this.day = date.day;
         this.month = date.month;
         this.year = date.year;
     }
 
-    public void advancement(int day, int month, int year){
-        if(this.day + day > 31){
-            this.day = (this.day + day % 365) % 30;
-            this.month += (this.day + day) / 31;
-        }else{
-            this.day += day;
-        }
-
-        if(this.month + month > 12){
-            this.month = (this.month + month) - (((this.month + month) / 12) * 12);
-            this.year += (this.month + month) / 12;
-        }else{
-            this.month += month;
-        }
-
-        this.year += year;
+    public int getDay() {
+        return day;
     }
 
-    public void getTime(){
-        System.out.println(this.day + "/" + this.month + "/" + this.year);
+    public void setDay(int day) {
+        this.day = day;
+    }
+
+    public int getMonth() {
+        return month;
+    }
+
+    public void setMonth(int month) {
+        this.month = month;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
+    }
+
+    public void advancement(int addDays, int addMonths, int addYears) {
+        // Aggiungi direttamente gli anni
+        this.year += addYears;
+
+        // Array dei giorni per ogni mese (senza anni bisestili)
+        int[] monthDays = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+        // Avanza di addDays giorni
+        this.day += addDays;
+        while (this.day > monthDays[this.month - 1]) {
+            this.day -= monthDays[this.month - 1];
+            this.month++;
+            if (this.month > 12) {
+                this.month = 1;
+                this.year++;
+            }
+        }
+
+        // Avanza di addMonths mesi
+        this.month += addMonths;
+        while (this.month > 12) {
+            this.month -= 12;
+            this.year++;
+        }
+    }
+
+    public String getTime(){
+        return this.day + "/" + this.month + "/" + this.year;
     }
 
     public int getDifferenceMonths(Date previousDate){
