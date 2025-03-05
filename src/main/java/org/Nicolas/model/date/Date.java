@@ -1,4 +1,4 @@
-package org.Nicolas.model;
+package org.Nicolas.model.date;
 
 import static java.lang.Math.abs;
 
@@ -62,13 +62,10 @@ public class Date {
     }
 
     public void advancement(int addDays, int addMonths, int addYears) {
-        // Aggiungi direttamente gli anni
         this.year += addYears;
 
-        // Array dei giorni per ogni mese (senza anni bisestili)
         int[] monthDays = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
-        // Avanza di addDays giorni
         this.day += addDays;
         while (this.day > monthDays[this.month - 1]) {
             this.day -= monthDays[this.month - 1];
@@ -79,7 +76,6 @@ public class Date {
             }
         }
 
-        // Avanza di addMonths mesi
         this.month += addMonths;
         while (this.month > 12) {
             this.month -= 12;
