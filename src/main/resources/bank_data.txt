@@ -1,0 +1,8 @@
+San Paolo;1/1/2026;
+Paolo1;S23032007n;1200.0;100.0;1/1/2026 : Gained 1200$ from the bank bonus;
+Paolo2;S23032007n;1200.0;100.0;1/1/2026 : Gained 1200$ from the bank bonus;
+Paolo3;S23032007n;1240.0;0.0;1/1/2025 : Deposit of 100.0$ to the bank balance;1/1/2025 : Withdrawal of 100.0$ from the bank balance;1/1/2025 : Deposit of 100.0$ to the bank balance;1/1/2025 : Payment of 100.0$ for a long low-risk Investment;1/1/2026 : Gained 1200$ from the bank bonus;1/1/2026 : Lost 60.0$ from the long low-risk investment;
+Paolo4;S23032007n;1200.0;100.0;1/1/2026 : Gained 1200$ from the bank bonus;
+Paolo5;S23032007n;1200.0;100.0;1/1/2026 : Gained 1200$ from the bank bonus;
+Paolo6;S23032007n;1200.0;100.0;1/1/2026 : Gained 1200$ from the bank bonus;
+Paolo7;S23032007n;1200.0;100.0;1/1/2026 : Gained 1200$ from the bank bonus;
