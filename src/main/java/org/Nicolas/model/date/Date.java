@@ -1,7 +1,5 @@
 package org.Nicolas.model.date;
 
-import static java.lang.Math.abs;
-
 public class Date {
     private int day;
     private int month;
@@ -37,54 +35,78 @@ public class Date {
         this.year = date.year;
     }
 
-    public int getDay() {
-        return day;
-    }
-
-    public void setDay(int day) {
+    public void setDay(int day){
         this.day = day;
     }
 
-    public int getMonth() {
-        return month;
-    }
-
-    public void setMonth(int month) {
+    public void setMonth(int month){
         this.month = month;
     }
 
-    public int getYear() {
-        return year;
+    public void setYear(int year){
+        this.year = year;
     }
 
-    public void setYear(int year) {
-        this.year = year;
+    public String getTime(){
+        return this.day + "/" + this.month + "/" + this.year;
     }
 
     public void advancement(int addDays, int addMonths, int addYears) {
         this.year += addYears;
 
-        int[] monthDays = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+        int[] monthDaysNormalYear = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+        int[] monthDaysLeapYear = {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+        this.month += addMonths - 1;
+
+        if(this.month > 12){
+            this.year += this.month / 12;
+            this.month = this.month % 12;
+        }
 
         this.day += addDays;
-        while (this.day > monthDays[this.month - 1]) {
-            this.day -= monthDays[this.month - 1];
-            this.month++;
-            if (this.month > 12) {
-                this.month = 1;
+        for(int i = 0; i < this.month; i++){
+            if((this.year % 4 == 0 && this.year % 100 != 0) || this.year % 400 == 0){
+                this.day += monthDaysLeapYear[i];
+            }else{
+                this.day += monthDaysNormalYear[i];
+            }
+        }
+        this.month = 1;
+
+        while(true){
+            if((this.year % 4 == 0 && this.year % 100 != 0) || this.year % 400 == 0){
+               if(this.day > 366){
+                   this.year++;
+                   this.day -= 366;
+               }else{
+                   break;
+               }
+            }else if(this.day > 365){
                 this.year++;
+                this.day -= 365;
+            }else{
+                break;
             }
         }
 
-        this.month += addMonths;
-        while (this.month > 12) {
-            this.month -= 12;
-            this.year++;
+        for(int i = 0; i < monthDaysNormalYear.length; i++){
+            if((this.year % 4 == 0 && this.year % 100 != 0) || this.year % 400 == 0){
+                if(this.day > monthDaysLeapYear[i]){
+                    this.day -= monthDaysLeapYear[i];
+                    this.month++;
+                }else{
+                    break;
+                }
+            }else{
+                if(this.day > monthDaysNormalYear[i]){
+                    this.day -= monthDaysNormalYear[i];
+                    this.month++;
+                }else{
+                    break;
+                }
+            }
         }
-    }
-
-    public String getTime(){
-        return this.day + "/" + this.month + "/" + this.year;
     }
 
     public int getDifferenceMonths(Date previousDate){
