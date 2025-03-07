@@ -44,7 +44,7 @@ public class Bank {
 
     public boolean deposit(User user, double amount) {
         if(!usersList.contains(user)){return false;}
-        if(user.walletMoney - amount < 0){return false;}
+        if(user.getWalletMoney() - amount < 0){return false;}
         user.bankBalance += amount;
         user.walletMoney -= amount;
         String transaction = time.getTime() + " : " + "Deposit of " + amount + "$ to the bank balance";
