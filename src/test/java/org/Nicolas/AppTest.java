@@ -3,112 +3,123 @@ package org.Nicolas;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.Nicolas.model.bank.Bank;
+import org.Nicolas.model.bank.User;
+import org.Nicolas.model.date.Date;
+import java.io.File;
+import java.io.IOException;
 
-/**
- * Unit test for Bank operations.
-
- */
 public class AppTest extends TestCase {
-
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
     public AppTest(String testName) {
         super(testName);
     }
 
-    /**
-     * @return the suite of tests being tested
-     */
     public static Test suite() {
         TestSuite suite = new TestSuite();
-
-        suite.addTest(new AppTest("testDate"));
-        suite.addTest(new AppTest("testInvestment"));
-        suite.addTest(new AppTest("testWithdrawDeposit"));
-
+        suite.addTest(new AppTest("testRegisterUser"));
+        suite.addTest(new AppTest("testLoginUser"));
+        suite.addTest(new AppTest("testDeposit"));
+        suite.addTest(new AppTest("testWithdraw"));
+        suite.addTest(new AppTest("testAdvanceTime"));
+        suite.addTest(new AppTest("testInvest"));
+        suite.addTest(new AppTest("testDateAdvancement"));
+        suite.addTest(new AppTest("testDateDifference"));
+        suite.addTest(new AppTest("testSaveAndLoadData"));
         return suite;
     }
 
-    /**
-     * Rigorous Test for Date advancement and time functionality
-     */
-    public void testDate() {
-        /*
+    public void testRegisterUser() {
+        Bank bank = new Bank("Test Bank", new Date());
+        assertTrue(bank.registerUser("newUser1", "pass123"));
+        assertTrue(bank.registerUser("newUser2", "pass456"));
+        assertFalse(bank.registerUser("newUser1", "password123"));
+    }
+
+    public void testLoginUser() {
+        Bank bank = new Bank("Test Bank", new Date());
+        bank.registerUser("testUser", "password123");
+        assertNotNull(bank.loginUser("testUser", "password123"));
+        assertNull(bank.loginUser("wrongUser", "password123"));
+    }
+
+    public void testDeposit() {
+        Bank bank = new Bank("Test Bank", new Date());
+        bank.registerUser("testUser", "password123");
+        User currentUser = bank.loginUser("testUser", "password123");
+        currentUser.setWalletMoney(500.0);
+        assertTrue(bank.deposit(currentUser, 200.0));
+        assertEquals(200.0, currentUser.getBankBalance());
+        assertFalse(bank.deposit(currentUser, 300.01));
+        assertEquals(200.0, currentUser.getBankBalance());
+    }
+
+    public void testWithdraw() {
+        Bank bank = new Bank("Test Bank", new Date());
+        bank.registerUser("testUser", "password123");
+        User currentUser = bank.loginUser("testUser", "password123");
+        currentUser.setBankBalance(500.0);
+        assertTrue(bank.withdraw(currentUser, 200.0));
+        assertEquals(300.0, currentUser.getBankBalance());
+        assertFalse(bank.withdraw(currentUser, 300.01));
+        assertEquals(300.0, currentUser.getBankBalance());
+    }
+
+    public void testAdvanceTime() {
+        Bank bank = new Bank("Test Bank", new Date());
+        bank.registerUser("testUser", "password123");
+        User currentUser = bank.loginUser("testUser", "password123");
+        currentUser.setBankBalance(1000.0);
+        bank.advanceTime(0, 2, 0);
+        assertEquals(1200.0, currentUser.getBankBalance());
+        currentUser.setBankBalance(0.0);
+        bank.advanceTime(4356, 25, 21);
+        assertEquals(42000.0, currentUser.getBankBalance());
+    }
+
+    public void testInvest() {
+        Bank bank = new Bank("Test Bank", new Date());
+        bank.registerUser("testUser", "password123");
+        User currentUser = bank.loginUser("testUser", "password123");
+        currentUser.setBankBalance(1000);
+        assertTrue(bank.invest(currentUser, 500, "short", "low"));
+        currentUser.setBankBalance(-100.0);
+        assertFalse(bank.invest(currentUser, 500, "short", "low"));
+        currentUser.setBankBalance(100.0);
+        assertFalse(bank.invest(currentUser, 100.01, "short", "low"));
+    }
+
+    public void testDateAdvancement() {
+        Date date = new Date(29, 2, 2024);
+        date.advancement(3452, 934, 678);
+        assertEquals("11/6/2789", date.getTime());
+        date.advancement(95736, 4692, 1);
+        assertEquals("24/7/3443", date.getTime());
+        date.advancement(34, 8, 3);
+        assertEquals("27/4/3447", date.getTime());
+    }
+
+    public void testDateDifference() {
         Date date = new Date(23, 11, 2025);
-
-        date.advancement(365, 0, 0);
-        assertEquals("Date should advance by 365 days", "23/11/2026", date.getTime());
-
-        date.advancement(5, 2, 0);
-        assertEquals("Date should advance to 5th February next year", "28/1/2027", date.getTime());
-
-        date.advancement(33, 0, 1);
-        assertEquals("Date should advance correctly", "2/3/2028", date.getTime());
-
-        date.advancement(45, 0, 0);
-        assertEquals("Date should advance by 45 days", "16/4/2028", date.getTime());
-
-        date.advancement(0, 20, 0);
-        assertEquals("Date should advance by 20 months", "16/12/2029", date.getTime());
-
-        date.advancement(152, 2, 0);
-        assertEquals("Date should advance by 152 days and 2 months", "17/7/2030", date.getTime());
-
-        */
+        Date pastDate = new Date(1, 1, 2023);
+        assertEquals(34, date.getDifferenceMonths(pastDate));
     }
 
+    public void testSaveAndLoadData() throws IOException {
+        Bank bank = new Bank("Test Bank", new Date());
+        bank.registerUser("testUser", "password123");
+        bank.saveData();
 
-    /**
-     * Rigorous Test for Investment operations
-     */
-    public void testInvestment() {
-        /*
-        Bank bank = new Bank(1000, new User("Paolo"), new Date(23, 11));
+        String filePath = "src/main/resources/bank_data.txt";
+        File file = new File(filePath);
+        assertTrue(file.exists());
+        assertTrue(file.length() > 0);
 
-        bank.invest(100, "short", "low");
-        bank.invest(50, "medium", "low");
-        bank.invest(50, "long", "low");
-        bank.invest(120, "short", "high");
-        bank.invest(50, "medium", "high");
-        bank.invest(7000, "long", "high");
-
-        */
+        Bank newBank = new Bank("Test Bank", new Date());
+        newBank.loadData();
+        assertNotNull(newBank.loginUser("testUser", "password123"));
     }
 
-    /**
-     * Rigorous Test for Withdraw and Deposit functionality
-     */
-    public void testWithdrawDeposit() {
-        /*
-        Bank bank = new Bank(0, new User("Paolo"), new Date(23, 11));
-
-        assertEquals("Initial money should be 0", 0, bank.getMoney(), 0.01);
-
-        bank.withdraw(20);
-        assertEquals("Money should still be 0 after withdrawing more than available", 0, bank.getMoney(), 0.01);
-
-        bank.deposit(50.99);
-        assertEquals("Money after depositing 50.99 should be 50.99", 50.99, bank.getMoney(), 0.01);
-
-        bank.withdraw(20.2);
-        assertEquals("Money after withdrawing 20.2 should be 30.79", 30.79, bank.getMoney(), 0.01);
-
-        bank.advanceTime(0, 3, 0);
-        assertEquals("Balance should not change after time advancement", 30.79, bank.getMoney(), 0.01);
-
-        bank.advanceTime(0, 0, 1);
-        assertEquals("Balance should still be the same after further time advancement", 30.79, bank.getMoney(), 0.01);
-
-         */
-    }
-
-    /**
-     * Rigorous Test :-), always true
-     */
     public void testApp() {
-        assertTrue("This test is always true", true);
+        assertTrue(true);
     }
 }

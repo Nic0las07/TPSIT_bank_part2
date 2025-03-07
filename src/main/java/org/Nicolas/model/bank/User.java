@@ -34,4 +34,28 @@ public class User {
         }
     }
 
+    public String getUsername(){
+        return username;
+    }
+
+    public String getPassword(){
+        return password;
+    }
+
+    public double getBankBalance(){
+        return bankBalance;
+    }
+
+    public double getWalletMoney(){
+        return walletMoney;
+    }
+
+    public void setWalletMoney(double walletMoney){
+        this.walletMoney = walletMoney;
+    }
+
+    public void setBankBalance(double bankBalance){
+        this.bankBalance = bankBalance;
+    }
+
 }
