@@ -33,6 +33,7 @@ public class AppTest extends TestCase {
         assertTrue(bank.registerUser("newUser1", "pass123"));
         assertTrue(bank.registerUser("newUser2", "pass456"));
         assertFalse(bank.registerUser("newUser1", "password123"));
+        bank.eraseData();
     }
 
     public void testLoginUser() {
