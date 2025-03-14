@@ -1,2 +1,3 @@
-Test Bank;1/1/2025;
-testUser;password123;0.0;100.0;
+International Bank;1/1/2000;
+Nicolas;S23032007n;0.0;100.0;
+Stanciy;S23032007n;0.0;100.0;
