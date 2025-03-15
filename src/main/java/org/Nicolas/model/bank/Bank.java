@@ -2,6 +2,7 @@ package org.Nicolas.model.bank;
 
 import org.Nicolas.model.date.Date;
 
+import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -59,6 +60,8 @@ public class Bank {
         user.walletMoney -= amount;
         String transaction = time.getTime() + " : " + "Deposit of " + amount + "$ to the bank balance";
         user.transactionsHistory.add(transaction);
+        String transactionData = time.getTime() + ";" + user.bankBalance + ";" + user.walletMoney;
+        user.graphData.add(transactionData);
         saveData();
         return true;
     }
@@ -70,6 +73,8 @@ public class Bank {
         user.walletMoney += amount;
         String transaction = time.getTime() + " : " + "Withdrawal of " + amount + "$ from " + "the bank balance";
         user.transactionsHistory.add(transaction);
+        String transactionData = time.getTime() + ";" + user.bankBalance + ";" + user.walletMoney;
+        user.graphData.add(transactionData);
         saveData();
         return true;
     }
@@ -81,7 +86,11 @@ public class Bank {
         for (User user : usersList) {
             user.bankBalance += bonus;
             user.transactionsHistory.add(time.getTime() + " : " + "Gained " + bonus + "$ from the bank bonus");
+
+            String transactionData = time.getTime() + ";" + user.bankBalance + ";" + user.walletMoney;
+            user.graphData.add(transactionData);
         }
+
         saveData();
     }
 
@@ -135,6 +144,10 @@ public class Bank {
         }
 
         user.bankBalance += finalInvestment;
+
+        String transactionData = time.getTime() + ";" + user.bankBalance + ";" + user.walletMoney;
+        user.graphData.add(transactionData);
+
         if(finalInvestment > 0){
             transaction = time.getTime() + " : " + "Earned " + finalInvestment + "$ from the " + duration + " " + risk + "-risk investment";
         }else{
@@ -146,20 +159,24 @@ public class Bank {
         return true;
     }
 
+    public boolean createFile(File file){
+        try {
+            if (file.createNewFile()) {
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
 
     public void saveData(){
         String directoryPath = "src/main/resources";
         String filename = "bank_data.txt";
         File file = new File(directoryPath + File.separator + filename);
 
-        try {
-            if (file.createNewFile()) {
-                System.out.println("File created: " + file.getAbsolutePath());
-            }
-        } catch (Exception e) {
-            System.out.println("Error during the file creation");
-            return;
-        }
+        if(!createFile(file)){return;}
 
         String timeData = time.getTime();
 
@@ -175,64 +192,134 @@ public class Bank {
         }catch(Exception e){
             System.out.print("Error during the file writing");
         }
+
+
+        directoryPath = "src/main/resources";
+        filename = "graphData.txt";
+        file = new File(directoryPath + File.separator + filename);
+
+        if(!createFile(file)){return;}
+
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter(file.getPath(), false))){
+            for (User user : usersList) {
+                for(String transaction : user.graphData){
+                    bw.write(transaction.substring(0,transaction.indexOf(";")));
+                    bw.write(",");
+                    transaction = transaction.substring(transaction.indexOf(";")+1);
+                    bw.write(transaction.substring(0,transaction.indexOf(";")));
+                    bw.write(",");
+                    bw.write(transaction.substring(transaction.indexOf(";")+1));
+                    bw.write(";");
+                }
+                bw.write("\n");
+            }
+        }catch(Exception e){
+            System.out.print("Error during the file writing");
+        }
     }
 
-    public void loadData(){
-        String filePath = "src/main/resources/bank_data.txt";
+    public void loadData() {
+        loadBankData("src/main/resources/bank_data.txt");
+        loadGraphData("src/main/resources/graphData.txt");
+    }
 
+    private void loadBankData(String filePath) {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line = br.readLine();
-
-            if(line != null){
-                bankName = line.substring(0,line.indexOf(";"));
-                line = line.substring(line.indexOf(";")+1,line.length()-1);
-
-                time.setDay(Integer.parseInt(line.substring(0,line.indexOf("/"))));
-                line = line.substring(line.indexOf("/")+1);
-
-                time.setMonth(Integer.parseInt(line.substring(0,line.indexOf("/"))));
-                line = line.substring(line.indexOf("/")+1);
-
-                time.setYear(Integer.parseInt(line));
+            if (line != null) {
+                String[] parts = line.split(";");
+                bankName = parts[0];
+                String[] dateParts = parts[1].split("/");
+                time.setDay(Integer.parseInt(dateParts[0]));
+                time.setMonth(Integer.parseInt(dateParts[1]));
+                time.setYear(Integer.parseInt(dateParts[2]));
             }
-
-            String temp;
-            double temp1;
 
             while ((line = br.readLine()) != null) {
-                User tempUser = new User("","");
-                temp = line.substring(0,line.indexOf(";"));
-                tempUser.username = temp;
-                line = line.substring(line.indexOf(";")+1);
+                String[] userParts = line.split(";");
+                User tempUser = new User(userParts[0], userParts[1]);
+                tempUser.bankBalance = Double.parseDouble(userParts[2]);
+                tempUser.walletMoney = Double.parseDouble(userParts[3]);
 
-                temp = line.substring(0,line.indexOf(";"));
-                tempUser.password = temp;
-                line = line.substring(line.indexOf(";")+1);
-
-                temp1 = Double.parseDouble(line.substring(0,line.indexOf(";")));
-                tempUser.bankBalance = temp1;
-                line = line.substring(line.indexOf(";")+1);
-
-                temp1 = Double.parseDouble(line.substring(0,line.indexOf(";")));
-                tempUser.walletMoney = temp1;
-
-
-                System.out.println(line + "\n");
-
-                while((line.indexOf(";") + 1) != line.length()){
-
-                    line = line.substring(line.indexOf(";")+1);
-
-                    temp = line.substring(0,line.indexOf(";"));
-                    tempUser.transactionsHistory.add(temp);
+                for (int i = 4; i < userParts.length; i++) {
+                    tempUser.transactionsHistory.add(userParts[i]);
                 }
-
                 usersList.add(new User(tempUser));
             }
-
         } catch (IOException e) {
             System.out.print("Error during the file reading");
         }
+    }
+
+    private void loadGraphData(String filePath) {
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            int index = 0;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(";");
+                for(String transaction : parts){
+                    String[] userParts = transaction.split(",");
+                    usersList.get(index).graphData.add(userParts[0] + ";" + userParts[1] + ";" + userParts[2]);
+                }
+                index++;
+            }
+        } catch (IOException e) {
+            System.out.print("Error during the file reading");
+        }
+    }
+
+    public void createGraphDataFile(User user){
+        this.eraseGraphDataFile();
+        String directoryPath = "src/main/resources/graph";
+        String filename = "data.csv";
+        File file = new File(directoryPath + File.separator + filename);
+
+        if(!createFile(file)){return;}
+
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter(file.getPath(), false))){
+            for(String transaction : user.graphData){
+                bw.write(transaction);
+                bw.write("\n");
+            }
+        }catch(Exception e){
+            System.out.print("Error during the file writing");
+        }
+    }
+
+    public void createGraphic(User user) {
+        if(user.graphData.isEmpty()){return;}
+        this.createGraphDataFile(user);
+
+        try {
+            String pythonFilePath = new File("src/main/resources/graph/main.py").getAbsolutePath();
+
+            ProcessBuilder pb = new ProcessBuilder("python", pythonFilePath);
+            pb.directory(new File("src/main/resources/graph"));
+
+            Process process = pb.start();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println("[Python] " + line);
+            }
+            while ((line = errorReader.readLine()) != null) {
+                System.err.println("[Python ERROR] " + line);
+            }
+
+            process.waitFor();
+
+            File graph = new File("src/main/resources/graph/graph.png").getAbsoluteFile();
+            if (graph.exists()) {
+                Desktop.getDesktop().open(graph);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        this.eraseGraphDataFile();
     }
 
     public void eraseData(){
@@ -243,6 +330,27 @@ public class Bank {
         if (file.exists()) {
             file.delete();
         }
+
+        directoryPath = "src/main/resources";
+        filename = "graphData.txt";
+        file = new File(directoryPath + File.separator + filename);
+
+        if (file.exists()) {
+            file.delete();
+        }
+
     }
+
+    public void eraseGraphDataFile(){
+        String directoryPath = "src/main/resources/graph";
+        String filename = "data.csv";
+        File file = new File(directoryPath + File.separator + filename);
+
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
+
 
 }
