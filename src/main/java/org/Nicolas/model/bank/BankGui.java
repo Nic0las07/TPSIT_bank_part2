@@ -170,16 +170,19 @@ public class BankGui {
                     clear();
                     System.out.println("BANK BALANCE \n");
                     System.out.println("-Balance: " + this.currentUser.getBankBalance() + " $");
+                    scanner.nextLine();
                     break;
                 case 6:
                     clear();
                     System.out.println("WALLET \n");
                     System.out.println("-Wallet: " + this.currentUser.getWalletMoney() + " $");
+                    scanner.nextLine();
                     break;
                 case 7:
                     clear();
                     System.out.println("TRANSACTIONS HISTORY \n");
                     currentUser.printHistory();
+                    scanner.nextLine();
                     break;
                 default:
                     break;
