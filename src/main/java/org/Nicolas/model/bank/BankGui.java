@@ -1,7 +1,5 @@
 package org.Nicolas.model.bank;
 
-import org.Nicolas.model.date.Date;
-
 import java.util.Scanner;
 
 public class BankGui {
@@ -11,7 +9,7 @@ public class BankGui {
     private User currentUser;
 
     public BankGui(Bank mainBank){
-        this.mainBank = new Bank(mainBank);
+        this.mainBank = mainBank;
         this.currentUser = null;
     }
 
@@ -45,7 +43,22 @@ public class BankGui {
     private int intInput(){
         while(true){
             try{
-                return scanner.nextInt();
+                int num = scanner.nextInt();
+                scanner.nextLine();
+                return num;
+            }catch(Exception e){
+                System.out.print("Please enter a valid number: ");
+                scanner.nextLine();
+            }
+        }
+    }
+
+    private double doubleInput(){
+        while(true){
+            try{
+                double num = scanner.nextDouble();
+                scanner.nextLine();
+                return num;
             }catch(Exception e){
                 System.out.print("Please enter a valid number: ");
                 scanner.nextLine();
@@ -101,74 +114,76 @@ public class BankGui {
             clear();
             this.printGuiSelections();
             choice = intInput();
-            scanner.nextLine();
             double amount = 0;
 
             switch (choice) {
                 case 1:
                     clear();
                     System.out.println("DEPOSIT \n");
-                    System.out.println("How much do you want to deposit from your wallet?");
-                    System.out.println("Remember that you have " + this.currentUser.getWalletMoney() + " euros");
-                    amount = scanner.nextDouble();
+                    System.out.println("Wallet money: " + this.currentUser.getWalletMoney() + " $");
+                    System.out.print("-Enter the amount you would like to deposit: ");
+                    amount = doubleInput();
                     this.mainBank.deposit(currentUser, amount);
                     break;
                 case 2:
                     clear();
                     System.out.println("WITHDRAWAL \n");
-                    System.out.println("How much money do you want to withdraw to your wallet?");
-                    System.out.println("Remember that you have " + this.currentUser.getBankBalance() + " euros");
-                    amount = scanner.nextDouble();
+                    System.out.println("Bank Balance: " + this.currentUser.getBankBalance() + " $");
+                    System.out.print("-Enter the amount you would like to withdraw: ");
+                    amount = doubleInput();
                     this.mainBank.withdraw(currentUser, amount);
                     break;
                 case 3:
                     clear();
                     System.out.println("INVESTMENT \n");
-                    System.out.println("You can choose");
-                    System.out.println(" - how much to invest (required)");
-                    System.out.println(" - the duration of the investment (required)");
-                    System.out.println("   short, medium, long");
-                    System.out.println(" - the risk of the investment (required)");
-                    System.out.println("   low, medium, high");
-                    System.out.println("Remember that you have " + this.currentUser.getBankBalance() + " euros");
+                    System.out.println("Bank Balance: " + this.currentUser.getBankBalance() + " $");
+                    System.out.print(" - Enter the amount to invest: ");
+                    amount = doubleInput();
+                    String duration = "";
+                    do{
+                        System.out.print(" - Enter the duration of the investment (short, medium, long): ");
+                        duration = scanner.nextLine().trim().toLowerCase();
+                    }while(!duration.equals("short") && !duration.equals("medium") && !duration.equals("long"));
 
-                    String duration = scanner.next();
-                    String risk = scanner.next();
-                    amount = scanner.nextDouble();
+                    String risk = "";
+                    do{
+                        System.out.print(" - Enter the risk of the investment (low, medium, high): ");
+                        risk = scanner.nextLine().trim().toLowerCase();
+                    }while(!risk.equals("low") && !risk.equals("medium") && !risk.equals("high"));
+
                     this.mainBank.invest(currentUser, amount, duration, risk);
                     break;
                 case 4:
                     clear();
                     System.out.println("ADVANCE TIME \n");
                     System.out.println(this.mainBank.getTime());
-                    System.out.println("You can choose");
-                    System.out.println(" - days (required)");
-                    System.out.println(" - months (not required, 0 to ignore)");
-                    System.out.println(" - years (not required, 0 to ignore)");
-                    System.out.println("Every month, a 100-euro bonus is automatically added to your wallet");
-                    int day = scanner.nextInt();
-                    int month = scanner.nextInt();
-                    int year = scanner.nextInt();
+                    System.out.println("Every month, a 100$ bonus is automatically added to your wallet");
+                    System.out.print(" - Enter the days: ");
+                    int day = intInput();
+                    System.out.print(" - Enter the months: ");
+                    int month = intInput();
+                    System.out.print(" - Enter the years: ");
+                    int year = intInput();
                     this.mainBank.advanceTime(day, month, year);
-                    System.out.println(this.mainBank.getTime());
                     break;
                 case 5:
                     clear();
                     System.out.println("BANK BALANCE \n");
-                    System.out.println("In your account, you have " + this.currentUser.getBankBalance() + " euros");
+                    System.out.println("-Balance: " + this.currentUser.getBankBalance() + " $");
+                    scanner.nextLine();
                     break;
                 case 6:
                     clear();
                     System.out.println("WALLET \n");
-                    System.out.println("In your wallet, you have " + this.currentUser.getWalletMoney() + " euros");
+                    System.out.println("-Wallet: " + this.currentUser.getWalletMoney() + " $");
+                    scanner.nextLine();
                     break;
                 case 7:
                     clear();
                     System.out.println("TRANSACTIONS HISTORY \n");
+                    currentUser.printHistory();
+                    scanner.nextLine();
                     break;
-                case 8:
-                    clear();
-                    System.out.println("THANKS FOR USING OUT BANK");
                 default:
                     break;
             }
@@ -183,7 +198,6 @@ public class BankGui {
             clear();
             printGuiStartingSelections();
             choice = intInput();
-            scanner.nextLine();
 
             switch(choice){
                 case 1:

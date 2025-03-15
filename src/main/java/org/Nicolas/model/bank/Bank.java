@@ -13,13 +13,6 @@ public class Bank {
     private final ArrayList<User> usersList;
     private final Date time;
 
-    public Bank(String bankName) {
-        this.time = new Date();
-        this.bankName = bankName;
-        this.usersList = new ArrayList<>();
-        this.loadData();
-    }
-
     public Bank(String bankName, Date time) {
         this.bankName = bankName;
         this.time = time;
@@ -27,11 +20,14 @@ public class Bank {
         this.loadData();
     }
 
+    public Bank(String bankName) {
+        this(bankName, new Date());
+    }
+
     public Bank(Bank bank){
         this.bankName = bank.bankName;
         this.usersList = new ArrayList<>(bank.usersList);
         this.time = bank.time;
-        this.loadData();
     }
 
     public String getTime(){
@@ -43,6 +39,7 @@ public class Bank {
             if(Objects.equals(user.username, username)){return false;}
         }
         usersList.add(new User(username, password));
+        saveData();
         return true;
     }
 
@@ -57,21 +54,23 @@ public class Bank {
 
     public boolean deposit(User user, double amount) {
         if(!usersList.contains(user)){return false;}
-        if(user.getWalletMoney() - amount < 0){return false;}
+        if(user.getWalletMoney() - amount < 0 || amount < 0){return false;}
         user.bankBalance += amount;
         user.walletMoney -= amount;
         String transaction = time.getTime() + " : " + "Deposit of " + amount + "$ to the bank balance";
         user.transactionsHistory.add(transaction);
+        saveData();
         return true;
     }
 
     public boolean withdraw(User user, double amount) {
         if(!usersList.contains(user)){return false;}
-        if(user.bankBalance - amount < 0){return false;}
+        if(user.bankBalance - amount < 0 || amount < 0){return false;}
         user.bankBalance -= amount;
         user.walletMoney += amount;
         String transaction = time.getTime() + " : " + "Withdrawal of " + amount + "$ from " + "the bank balance";
         user.transactionsHistory.add(transaction);
+        saveData();
         return true;
     }
 
@@ -83,6 +82,7 @@ public class Bank {
             user.bankBalance += bonus;
             user.transactionsHistory.add(time.getTime() + " : " + "Gained " + bonus + "$ from the bank bonus");
         }
+        saveData();
     }
 
     public boolean invest(User user, double amount, String duration, String risk) {
@@ -142,6 +142,7 @@ public class Bank {
         }
 
         user.transactionsHistory.add(transaction);
+        saveData();
         return true;
     }
 
@@ -232,7 +233,6 @@ public class Bank {
         } catch (IOException e) {
             System.out.print("Error during the file reading");
         }
-        eraseData();
     }
 
     public void eraseData(){
@@ -241,13 +241,7 @@ public class Bank {
         File file = new File(directoryPath + File.separator + filename);
 
         if (file.exists()) {
-            if (file.delete()) {
-                System.out.println("File eliminato con successo.");
-            } else {
-                System.out.println("Errore durante l'eliminazione del file.");
-            }
-        } else {
-            System.out.println("Il file non esiste, nessuna eliminazione necessaria.");
+            file.delete();
         }
     }
 
