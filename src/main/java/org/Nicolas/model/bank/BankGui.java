@@ -30,7 +30,8 @@ public class BankGui {
         System.out.println("  5 - CHECK YOUR ACCOUNT ");
         System.out.println("  6 - CHECK YOUR WALLET ");
         System.out.println("  7 - CHECK YOUR TRANSACTIONS HISTORY ");
-        System.out.println("  8 - LOGOUT \n");
+        System.out.println("  8 - SHOW GRAPHIC ");
+        System.out.println("  9 - LOGOUT \n");
         System.out.print("Enter your choice: ");
     }
 
@@ -89,10 +90,17 @@ public class BankGui {
 
     private void registerGui(){
         System.out.println("REGISTRATION \n");
-        System.out.print("Enter your username: ");
-        String username = scanner.nextLine();
-        System.out.print("Enter your Password: ");
-        String password = scanner.nextLine();
+        String username = "";
+        String password = "";
+        do{
+            System.out.print("Enter your username: ");
+            username = scanner.nextLine();
+        }while(username.isEmpty());
+
+        do{
+            System.out.print("Enter your Password: ");
+            password = scanner.nextLine();
+        }while(password.isEmpty());
 
         while(!mainBank.registerUser(username, password)){
             System.out.print("The user already exists, enter 'n' to go back or anything to continue: ");
@@ -184,11 +192,15 @@ public class BankGui {
                     currentUser.printHistory();
                     scanner.nextLine();
                     break;
+                case 8:
+                    mainBank.createGraphic(currentUser);
+                    scanner.nextLine();
+                    break;
                 default:
                     break;
             }
 
-        }while(choice != 8);
+        }while(choice != 9);
     }
 
     public void mainGui() {
