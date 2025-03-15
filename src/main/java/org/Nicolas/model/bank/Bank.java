@@ -27,6 +27,17 @@ public class Bank {
         this.loadData();
     }
 
+    public Bank(Bank bank){
+        this.bankName = bank.bankName;
+        this.usersList = new ArrayList<>(bank.usersList);
+        this.time = bank.time;
+        this.loadData();
+    }
+
+    public String getTime(){
+        return this.time.getTime();
+    }
+
     public boolean registerUser(String username, String password){
         for(User user : usersList){
             if(Objects.equals(user.username, username)){return false;}
@@ -167,9 +178,6 @@ public class Bank {
 
     public void loadData(){
         String filePath = "src/main/resources/bank_data.txt";
-        File file = new File(filePath);
-
-        if (file.exists() && file.length() == 0) {return;}
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line = br.readLine();
@@ -224,7 +232,7 @@ public class Bank {
         } catch (IOException e) {
             System.out.print("Error during the file reading");
         }
-
+        eraseData();
     }
 
     public void eraseData(){
