@@ -40,12 +40,6 @@ public class User {
         }
     }
 
-    public void printGraph(){
-        for(String trans : graphData){
-            System.out.println(trans + "\n");
-        }
-    }
-
     public String getUsername(){
         return username;
     }
