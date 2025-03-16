@@ -120,6 +120,11 @@ public class AppTest {
         assertTrue(file.exists());
         assertTrue(file.length() > 0);
 
+        filePath = "src/main/resources/graphData.txt";
+        file = new File(filePath);
+        assertTrue(file.exists());
+        assertTrue(file.length() > 0);
+
         Bank newBank = new Bank("Test Bank", new Date());
         newBank.loadData();
         assertNotNull(newBank.loginUser("testUser", "password123"));

@@ -39,7 +39,9 @@ public class Bank {
         for(User user : usersList){
             if(Objects.equals(user.username, username)){return false;}
         }
-        usersList.add(new User(username, password));
+        User user = new User(username, password);
+        user.graphData.add("1/1/2000;0.0;0.0");
+        usersList.add(new User(user));
         saveData();
         return true;
     }
@@ -159,7 +161,7 @@ public class Bank {
         return true;
     }
 
-    public boolean createFile(File file){
+    private boolean createFile(File file){
         try {
             if (file.createNewFile()) {
                 return true;
@@ -252,6 +254,7 @@ public class Bank {
     }
 
     private void loadGraphData(String filePath) {
+
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             int index = 0;
@@ -316,41 +319,25 @@ public class Bank {
                 Desktop.getDesktop().open(graph);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
 
         this.eraseGraphDataFile();
     }
 
+    private void eraseFile(String directoryPath, String filename){
+        File file = new File(directoryPath + File.separator + filename);
+        if (file.exists()) {
+            System.out.println(file.delete());
+        }
+    }
+
     public void eraseData(){
-        String directoryPath = "src/main/resources";
-        String filename = "bank_data.txt";
-        File file = new File(directoryPath + File.separator + filename);
-
-        if (file.exists()) {
-            file.delete();
-        }
-
-        directoryPath = "src/main/resources";
-        filename = "graphData.txt";
-        file = new File(directoryPath + File.separator + filename);
-
-        if (file.exists()) {
-            file.delete();
-        }
-
+        eraseFile("src/main/resources", "bank_data.txt");
+        eraseFile("src/main/resources", "graphData.txt");
     }
 
-    public void eraseGraphDataFile(){
-        String directoryPath = "src/main/resources/graph";
-        String filename = "data.csv";
-        File file = new File(directoryPath + File.separator + filename);
-
-        if (file.exists()) {
-            file.delete();
-        }
+    void eraseGraphDataFile(){
+        eraseFile("src/main/resources/graph", "data.csv");
     }
-
-
-
 }
